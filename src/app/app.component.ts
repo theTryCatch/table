@@ -49,20 +49,24 @@ export interface BrandingBarMenuItem {
         <!-- Parameterized Application Name -->
         <a class="btn btn-ghost text-xl">{{ applicationName }}</a>
 
-        <!-- Additional Branding Bar Menu Items -->
-        <ng-container *ngFor="let item of brandingBarMenuItems">
-          <a
-            *ngIf="item.route"
-            class="btn btn-ghost"
-            [routerLink]="item.route"
-          >
-            <!-- Display icon or label based on availability -->
-            <i *ngIf="item.icon" [class]="item.icon"></i>
-            <span *ngIf="!item.icon">{{ item.label }}</span>
-          </a>
-        </ng-container>
+        
       </div>
-
+      <div class="flex flex-1 justify-end px-2">
+        <div class="flex items-stretch">
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
+              Dropdown
+            </div>
+            <ul
+              tabindex="0"
+              class="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow"
+            >
+              <li><a>Item 1</a></li>
+              <li><a>Item 2</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <!-- Right Side: Theme Selector and User Profile -->
       <div class="flex-none flex items-center space-x-2">
         <!-- Color Picker Button -->
@@ -119,11 +123,11 @@ export class AppComponent {
   @Input() brandingBarMenuItems: BrandingBarMenuItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'icon-class-dashboard' },
     { label: 'Reports', route: '/reports' },
-    { label: 'Help', route: '/help', icon: 'icon-class-help' }
+    { label: 'Help', route: '/help', icon: 'icon-class-help' },
   ]; // Default value for the branding bar menu items
 
   @Input() userProfileMenuItems: UserProfileMenuItem[] = [
-    { label: 'Settings' }
+    { label: 'Settings' },
   ]; // Default value for the user profile menu items
 
   applicationName: string = 'Agent Assist';
