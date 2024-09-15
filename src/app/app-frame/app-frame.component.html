@@ -1,0 +1,113 @@
+<div class="navbar bg-base-100">
+  <!-- Navbar Start with menu toggle for small screens -->
+  <div class="navbar-start">
+    <!-- Dropdown for small screens -->
+    <div class="dropdown lg:hidden" *ngIf="brandingBarMenuItems.length > 0">
+      <button tabindex="0" class="btn btn-ghost" (click)="toggleDropdown()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h8m-8 6h16"
+          />
+        </svg>
+      </button>
+      <ul
+        *ngIf="isDropdownOpen"
+        class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+      >
+        <ng-container *ngFor="let item of brandingBarMenuItems">
+          <li *ngIf="!item.children">
+            <a [routerLink]="item.route" (click)="onMenuItemClick(item)">{{
+              item.label
+            }}</a>
+          </li>
+          <li *ngIf="item.children" tabindex="0">
+            <details>
+              <summary>{{ item.label }}</summary>
+              <ul class="p-2">
+                <ng-container *ngFor="let child of item.children">
+                  <li>
+                    <a
+                      [routerLink]="child.route"
+                      (click)="onMenuItemClick(child, [item, child])"
+                      >{{ child.label }}</a
+                    >
+                  </li>
+                </ng-container>
+              </ul>
+            </details>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <!-- Branding and App Name -->
+    <div class="flex items-center space-x-2">
+      <div class="hidden md:block" [innerHTML]="companyLogo"></div>
+      <a class="btn btn-ghost normal-case text-xl">{{ applicationName }}</a>
+    </div>
+  </div>
+
+  <!-- Center Menu for larger screens -->
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1">
+      <ng-container *ngFor="let item of brandingBarMenuItems">
+        <li *ngIf="!item.children">
+          <a [routerLink]="item.route" (click)="onMenuItemClick(item)">{{
+            item.label
+          }}</a>
+        </li>
+        <li *ngIf="item.children" tabindex="0">
+          <details>
+            <summary>{{ item.label }}</summary>
+            <ul class="p-2 bg-base-100">
+              <ng-container *ngFor="let child of item.children">
+                <li>
+                  <a
+                    [routerLink]="child.route"
+                    (click)="onMenuItemClick(child, [item, child])"
+                    >{{ child.label }}</a
+                  >
+                </li>
+              </ng-container>
+            </ul>
+          </details>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+
+  <!-- Right-side items -->
+  <div class="navbar-end flex items-center space-x-2">
+    <!-- Theme Selector Component -->
+    <app-theme-selector initialTheme="dark"></app-theme-selector>
+
+    <!-- User Profile Dropdown -->
+    <div class="dropdown dropdown-end">
+      <button tabindex="0" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img [src]="userProfileImage" alt="User Profile Image" />
+        </div>
+      </button>
+      <ul
+        tabindex="0"
+        class="dropdown-content menu menu-sm bg-base-100 rounded-box mt-3 w-52 p-2 shadow"
+      >
+        <li *ngFor="let item of userProfileMenuItems">
+          <a (click)="onUserProfileMenuItemClick(item)"
+            >{{ item.label }}
+            <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

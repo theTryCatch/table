@@ -1,115 +1,98 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, HostListener, ElementRef } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router'; // Import RouterLink
+import { Router, RouterLink } from '@angular/router';
 import { ThemeSelectorComponent } from './theme-selector/theme-selector.component';
 
-// Define interfaces
-export interface UserProfileMenuItem {
+// Define interfaces with iFTUI prefix
+export interface iFTUIUserProfileMenuItem {
   label: string;
   badge?: string;
 }
 
-export interface BrandingBarMenuItem {
+export interface iFTUIBrandingBarMenuItem {
   label: string;
   route?: string;
   icon?: string;
+  children?: iFTUIBrandingBarMenuItem[]; // Nested items for submenus
 }
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, ThemeSelectorComponent], // Include RouterLink in the imports array
+  imports: [NgFor, NgIf, RouterLink, ThemeSelectorComponent],
   template: `
-    <div class="navbar bg-base-100 sticky top-0 z-50">
-      <!-- Left Side: Sidebar Toggle Button and Logo -->
-      <div class="flex items-center space-x-2">
-        <!-- Sidebar Toggle Button -->
-        <button class="btn btn-square btn-ghost" (click)="onSidebarToggle()">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            class="inline-block h-5 w-5 stroke-current"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            ></path>
-          </svg>
-        </button>
+    <div class="navbar bg-base-100">
+      <!-- Navbar Start with menu toggle for small screens -->
+      <div class="navbar-start">
+        <!-- Dropdown for small screens -->
+        <div class="dropdown lg:hidden">
+          <button tabindex="0" class="btn btn-ghost" (click)="toggleDropdown()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+            </svg>
+          </button>
+          <ul *ngIf="isDropdownOpen" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+            <ng-container *ngFor="let item of brandingBarMenuItems">
+              <li *ngIf="!item.children">
+                <a [routerLink]="item.route" (click)="onMenuItemClick(item)">{{ item.label }}</a>
+              </li>
+              <li *ngIf="item.children" tabindex="0">
+                <details #detailsMenu>
+                  <summary (click)="toggleDetails($event, detailsMenu)">{{ item.label }}</summary>
+                  <ul class="p-2">
+                    <ng-container *ngFor="let child of item.children">
+                      <li><a [routerLink]="child.route" (click)="onMenuItemClick(child)">{{ child.label }}</a></li>
+                    </ng-container>
+                  </ul>
+                </details>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
 
-        <!-- Parameterized Company Logo, hidden on small screens -->
-        <div class="flex-none hidden md:block" [innerHTML]="companyLogo"></div>
-      </div>
-
-      <!-- Middle: Application Name and Additional Menu Items -->
-      <div class="flex-1 text-center md:text-left flex items-center space-x-4">
-        <!-- Parameterized Application Name -->
-        <a class="btn btn-ghost text-xl">{{ applicationName }}</a>
-
-        
-      </div>
-      <div class="flex flex-1 justify-end px-2">
-        <div class="flex items-stretch">
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
-              Dropdown
-            </div>
-            <ul
-              tabindex="0"
-              class="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow"
-            >
-              <li><a>Item 1</a></li>
-              <li><a>Item 2</a></li>
-            </ul>
-          </div>
+        <!-- Branding and App Name -->
+        <div class="flex items-center space-x-2">
+          <div class="hidden md:block" [innerHTML]="companyLogo"></div>
+          <a class="btn btn-ghost normal-case text-xl">{{ applicationName }}</a>
         </div>
       </div>
-      <!-- Right Side: Theme Selector and User Profile -->
-      <div class="flex-none flex items-center space-x-2">
-        <!-- Color Picker Button -->
+
+      <!-- Center Menu for larger screens -->
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <ng-container *ngFor="let item of brandingBarMenuItems">
+            <li *ngIf="!item.children">
+              <a [routerLink]="item.route" (click)="onMenuItemClick(item)">{{ item.label }}</a>
+            </li>
+            <li *ngIf="item.children" tabindex="0">
+              <details #detailsMenu>
+                <summary (click)="toggleDetails($event, detailsMenu)">{{ item.label }}</summary>
+                <ul class="p-2 bg-base-100">
+                  <ng-container *ngFor="let child of item.children">
+                    <li><a [routerLink]="child.route" (click)="onMenuItemClick(child)">{{ child.label }}</a></li>
+                  </ng-container>
+                </ul>
+              </details>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <!-- Right-side items -->
+      <div class="navbar-end flex items-center space-x-2">
+        <!-- Theme Selector Component -->
         <app-theme-selector initialTheme="dark"></app-theme-selector>
 
-        <!-- User Profile -->
+        <!-- User Profile Dropdown -->
         <div class="dropdown dropdown-end">
-          <!-- Checkbox to control the dropdown visibility -->
-          <input
-            type="checkbox"
-            id="userMenuDropdown"
-            class="dropdown-toggle hidden"
-            #dropdownCheckbox
-          />
-          <div
-            tabindex="0"
-            role="button"
-            class="btn btn-ghost btn-circle avatar"
-          >
+          <button tabindex="0" class="btn btn-ghost btn-circle avatar">
             <div class="w-10 rounded-full">
-              <!-- Parameterized User Profile Image -->
-              <img
-                [src]="userProfileImage"
-                alt="User Profile Image"
-                (click)="dropdownCheckbox.checked = !dropdownCheckbox.checked"
-              />
+              <img [src]="userProfileImage" alt="User Profile Image" />
             </div>
-          </div>
-          <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-            [class.hidden]="!dropdownCheckbox.checked"
-            *ngIf="userProfileMenuItems.length > 0"
-          >
+          </button>
+          <ul tabindex="0" class="dropdown-content menu menu-sm bg-base-100 rounded-box mt-3 w-52 p-2 shadow">
             <li *ngFor="let item of userProfileMenuItems">
-              <a
-                (click)="
-                  onUserProfileMenuItemClick(item);
-                  dropdownCheckbox.checked = false
-                "
-                [class.justify-between]="item.badge"
-              >
-                {{ item.label }}
+              <a (click)="onUserProfileMenuItemClick(item)">{{ item.label }}
                 <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
               </a>
             </li>
@@ -120,52 +103,94 @@ export interface BrandingBarMenuItem {
   `,
 })
 export class AppComponent {
-  @Input() brandingBarMenuItems: BrandingBarMenuItem[] = [
+  @Input() brandingBarMenuItems: iFTUIBrandingBarMenuItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'icon-class-dashboard' },
     { label: 'Reports', route: '/reports' },
-    { label: 'Help', route: '/help', icon: 'icon-class-help' },
-  ]; // Default value for the branding bar menu items
+    {
+      label: 'Help',
+      route: '/help',
+      icon: 'icon-class-help',
+      children: [
+        { label: 'Submenu 1', route: '/help/submenu1' },
+        { label: 'Submenu 2', route: '/help/submenu2' },
+      ],
+    },
+  ];
 
-  @Input() userProfileMenuItems: UserProfileMenuItem[] = [
-    { label: 'Settings' },
-  ]; // Default value for the user profile menu items
+  @Input() userProfileMenuItems: iFTUIUserProfileMenuItem[] = [{ label: 'Settings' }];
 
   applicationName: string = 'Agent Assist';
-  userProfileImage: string =
-    'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp';
+  userProfileImage: string = 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp';
 
   companyLogo: string = `
     <svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
-      <text
-        x="50%"
-        y="50%"
-        font-family="Arial, sans-serif"
-        font-size="26"
-        fill="#2C4770"
-        text-anchor="middle"
-        alignment-baseline="middle"
-      >
+      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="26" fill="#2C4770" text-anchor="middle" alignment-baseline="middle">
         Morgan Stanley
       </text>
     </svg>
   `;
 
   @Output() sidebarToggled = new EventEmitter<void>();
-  @Output() menuItemSelected = new EventEmitter<UserProfileMenuItem>();
+  @Output() userProfileMenuItemSelected = new EventEmitter<iFTUIUserProfileMenuItem>();
+  @Output() menuItemSelected = new EventEmitter<{
+    item: iFTUIBrandingBarMenuItem;
+    hierarchy: iFTUIBrandingBarMenuItem[];
+  }>();
   @Output() colorPickerSelected = new EventEmitter<void>();
 
+  isDropdownOpen = false; // State to control dropdown visibility
+
+  constructor(private elRef: ElementRef) {}
+
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
   onSidebarToggle(): void {
-    console.log('Sidebar toggle button clicked');
     this.sidebarToggled.emit();
   }
 
   onColorPicker(): void {
-    console.log('Color picker button clicked');
     this.colorPickerSelected.emit();
   }
 
-  onUserProfileMenuItemClick(item: UserProfileMenuItem): void {
-    console.log('User profile menu item clicked:', item.label);
-    this.menuItemSelected.emit(item);
+  onUserProfileMenuItemClick(item: iFTUIUserProfileMenuItem): void {
+    this.userProfileMenuItemSelected.emit(item);
+    this.closeMenus();
+  }
+
+  onMenuItemClick(item: iFTUIBrandingBarMenuItem): void {
+    this.menuItemSelected.emit({ item, hierarchy: [item] });
+    this.closeMenus();
+  }
+
+  toggleDetails(event: MouseEvent, detailsMenu: HTMLDetailsElement): void {
+    if (detailsMenu) {
+      event.preventDefault();
+      detailsMenu.open = !detailsMenu.open;
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent): void {
+    const clickedInside = this.elRef.nativeElement.contains(event.target);
+    if (!clickedInside) {
+      this.closeMenus();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.closeMenus();
+  }
+
+  closeMenus(): void {
+    this.isDropdownOpen = false;
+
+    // Close all open details elements
+    const detailsElements = this.elRef.nativeElement.querySelectorAll('details');
+    detailsElements.forEach((details: HTMLDetailsElement) => {
+      details.open = false;
+    });
   }
 }
