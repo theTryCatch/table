@@ -5,10 +5,9 @@ import {
   EventEmitter,
   HostListener,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ThemeSelectorComponent } from '../theme-selector/theme-selector.component';
 
 @Component({
@@ -19,11 +18,11 @@ import { ThemeSelectorComponent } from '../theme-selector/theme-selector.compone
   styles: [],
 })
 export class AppFrame {
-  @Input() brandingBarMenuItems: iFTUIBrandingBarMenuItem[] = [];
-  @Input() userProfileMenuItems: iFTUIUserProfileMenuItem[] = [];
   @Input() applicationName: string = '';
   @Input() userProfileImage: string = '';
   @Input() companyLogo: string = '';
+  @Input() brandingBarMenuItems: iFTUIBrandingBarMenuItem[] = [];
+  @Input() userProfileMenuItems: iFTUIUserProfileMenuItem[] = [];
   @Output() sidebarToggled = new EventEmitter<void>();
   @Output() userProfileMenuItemSelected =
     new EventEmitter<iFTUIUserProfileMenuItem>();
@@ -33,8 +32,9 @@ export class AppFrame {
   }>();
   @Output() colorPickerSelected = new EventEmitter<void>();
 
-  constructor(private elRef: ElementRef, private router: Router) {}
   isDropdownOpen = false; // State to control dropdown visibility
+
+  constructor(private elRef: ElementRef) {}
 
   toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
@@ -51,25 +51,10 @@ export class AppFrame {
   onUserProfileMenuItemClick(item: iFTUIUserProfileMenuItem): void {
     this.userProfileMenuItemSelected.emit(item);
     this.closeMenus();
-    console.log(item);
   }
 
-  onMenuItemClick(
-    item: iFTUIBrandingBarMenuItem,
-    hierarchy: iFTUIBrandingBarMenuItem[] = [item]
-  ): void {
-    // Emit the item and hierarchy as an object
-    this.menuItemSelected.emit({ item, hierarchy });
-    console.log({ item, hierarchy });
-
-    // Check if the route exists
-    if (
-      !item.route ||
-      !this.router.config.some((route) => route.path === item.route)
-    ) {
-      throw new Error(`Route '${item.route}' does not exist.`);
-    }
-
+  onMenuItemClick(item: iFTUIBrandingBarMenuItem): void {
+    this.menuItemSelected.emit({ item, hierarchy: [item] });
     this.closeMenus();
   }
 
