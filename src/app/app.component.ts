@@ -65,7 +65,9 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
               class="dropdown-content menu menu-sm bg-base-100 rounded-box mt-3 w-52 p-2 shadow"
             >
               <li *ngFor="let item of userProfileMenuItems">
-                <a (click)="onUserProfileMenuItemClick(item)">{{ item.label }}</a>
+                <a (click)="onUserProfileMenuItemClick(item)">{{
+                  item.label
+                }}</a>
               </li>
             </ul>
           </div>
@@ -122,13 +124,17 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
             <li class="my-2">
               <a href="#" class="text-white flex items-center space-x-4">
                 <span class="iconify" data-icon="ic:baseline-dashboard"></span>
-                <span *ngIf="leftSidenavState === 'expanded' || isSmallScreen">Dashboard</span>
+                <span *ngIf="leftSidenavState === 'expanded' || isSmallScreen"
+                  >Dashboard</span
+                >
               </a>
             </li>
             <li class="my-2">
               <a href="#" class="text-white flex items-center space-x-4">
                 <span class="iconify" data-icon="ic:baseline-person"></span>
-                <span *ngIf="leftSidenavState === 'expanded' || isSmallScreen">Profile</span>
+                <span *ngIf="leftSidenavState === 'expanded' || isSmallScreen"
+                  >Profile</span
+                >
               </a>
             </li>
           </ul>
@@ -161,13 +167,17 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
             <li class="my-2">
               <a href="#" class="text-white flex items-center space-x-4">
                 <span class="iconify" data-icon="ic:baseline-dashboard"></span>
-                <span *ngIf="rightSidenavState === 'expanded' || isSmallScreen">Dashboard</span>
+                <span *ngIf="rightSidenavState === 'expanded' || isSmallScreen"
+                  >Dashboard</span
+                >
               </a>
             </li>
             <li class="my-2">
               <a href="#" class="text-white flex items-center space-x-4">
                 <span class="iconify" data-icon="ic:baseline-person"></span>
-                <span *ngIf="rightSidenavState === 'expanded' || isSmallScreen">Profile</span>
+                <span *ngIf="rightSidenavState === 'expanded' || isSmallScreen"
+                  >Profile</span
+                >
               </a>
             </li>
           </ul>
@@ -187,31 +197,42 @@ export class AppComponent {
   userProfileImage: string =
     'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp';
   userProfileMenuItems: iFTUIUserProfileMenuItem[] = [{ label: 'Settings' }];
-
+  
   constructor() {
     this.updateSidenavState(window.innerWidth);
   }
-
-  /* @HostListener('window:resize', ['$event'])
+  
+  private adaptiveWindowResize: boolean = false;
+  @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    this.updateSidenavState(event.target.innerWidth);
-  } */
+    if (this.adaptiveWindowResize)
+      this.updateSidenavState(event.target.innerWidth);
+  }
 
   toggleSidenav(side: 'left' | 'right') {
     if (side === 'left') {
-      this.leftSidenavState = this.getNextSidenavState(this.leftSidenavState, 'left');
+      this.leftSidenavState = this.getNextSidenavState(
+        this.leftSidenavState,
+        'left'
+      );
       if (this.isSmallScreen && this.leftSidenavState !== 'closed') {
         this.rightSidenavState = 'closed'; // Close the right sidenav on small screens
       }
     } else {
-      this.rightSidenavState = this.getNextSidenavState(this.rightSidenavState, 'right');
+      this.rightSidenavState = this.getNextSidenavState(
+        this.rightSidenavState,
+        'right'
+      );
       if (this.isSmallScreen && this.rightSidenavState !== 'closed') {
         this.leftSidenavState = 'closed'; // Close the left sidenav on small screens
       }
     }
   }
 
-  getNextSidenavState(currentState: 'closed' | 'icons' | 'expanded', side: 'left' | 'right'): 'closed' | 'icons' | 'expanded' {
+  getNextSidenavState(
+    currentState: 'closed' | 'icons' | 'expanded',
+    side: 'left' | 'right'
+  ): 'closed' | 'icons' | 'expanded' {
     // For right sidenav, only toggle between "closed" and "expanded"
     if (side === 'right') {
       return currentState === 'expanded' ? 'closed' : 'expanded';
@@ -246,7 +267,10 @@ export class AppComponent {
     }
   }
 
-  getSidenavWidth(state: 'closed' | 'icons' | 'expanded', side: 'left' | 'right') {
+  getSidenavWidth(
+    state: 'closed' | 'icons' | 'expanded',
+    side: 'left' | 'right'
+  ) {
     if (state === 'expanded') {
       return this.isSmallScreen ? '100%' : '16rem'; // Full width on small screens, 16rem otherwise
     } else if (state === 'icons' && side === 'left') {
