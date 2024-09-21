@@ -1,7 +1,37 @@
-<app-frame
-  applicationName="{{ applicationName }}"
-  userProfileImage="{{ userProfileImage }}"
-  companyLogo="{{companyLogo}}"
-  [brandingBarMenuItems]="brandingBarMenuItems"
-  [userProfileMenuItems]="userProfileMenuItems"
-></app-frame>
+<div class="drawer drawer-mobile" [class.drawer-open]="isPinned" style="display: unset;">
+  <!-- Navbar -->
+  <div class="navbar bg-red-200">
+    <div class="flex-none md:hidden">
+      <!-- Button to toggle the drawer for smaller screens -->
+      <label for="my-drawer" class="btn btn-square btn-primary" (click)="toggleDrawer()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+        </svg>
+      </label>
+    </div>
+    <div class="flex-1">
+        <label for="my-drawer" class="btn btn-primary" (click)="toggleDrawer()">Toggle Drawer</label>
+      <a class="btn btn-ghost normal-case text-xl">My App</a>
+    </div>
+    
+  </div>
+
+  <!-- Drawer content -->
+  <input id="my-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="isOpen" />
+  <div class="drawer-content">
+    <!-- Page content here -->
+    
+    <h1 class="text-3xl font-bold">Main Content Area</h1>
+    <p>Your main content goes here...</p>
+  </div> 
+  <div class="drawer-side mt-16">
+    <label for="my-drawer" class="drawer-overlay"></label> 
+    <ul class="menu p-4 w-80 bg-base-100">
+      <!-- Sidebar content here -->
+      <li><a href="#">Sidebar Item 1</a></li>
+      <li><a href="#">Sidebar Item 2</a></li>
+      <li><a href="#">Sidebar Item 3</a></li>
+    </ul>
+    <button class="btn btn-secondary mt-4" (click)="togglePin()">{{ isPinned ? 'Unpin Drawer' : 'Pin Drawer' }}</button>
+  </div>
+</div>
