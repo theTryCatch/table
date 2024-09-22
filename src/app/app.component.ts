@@ -109,10 +109,10 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
         </div>
       </nav>
 
-      <div class="flex flex-grow pt-16">
+      <div class="flex flex-grow pt-16 overflow-auto">
         <!-- Left sidenav -->
         <div
-          class="bg-gray-800 text-white transition-all duration-500 ease-in-out fixed z-40 min-h-screen"
+          class="bg-gray-800 text-white transition-all duration-500 ease-in-out fixed z-40 min-h-screen overflow-auto"
           [ngClass]="{
             'w-64': leftSidenavState === 'expanded' && !isSmallScreen,
             'w-16': leftSidenavState === 'icons' && !isSmallScreen,
@@ -138,11 +138,49 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
               </a>
             </li>
           </ul>
+
+          <ul class="menu rounded-box bg-base-300">
+            <li><a>Item 1</a></li>
+            <li>
+              <details open>
+                <summary>Parent</summary>
+                <ul>
+                  <li><a>Submenu 1</a></li>
+                  <li><a>Submenu 2</a></li>
+                  <li>
+                    <details open>
+                      <summary>Parent</summary>
+                      <ul>
+                        <li><a>Submenu 1</a></li>
+                        <li>
+                          <details open>
+                            <summary>Parent</summary>
+                            <ul>
+                              <li><a>Submenu 1</a></li>
+                              <li>
+                                <details open>
+                                  <summary>Parent</summary>
+                                  <ul>
+                                    <li><a>Communications</a></li>
+                                  </ul>
+                                </details>
+                              </li>
+                            </ul>
+                          </details>
+                        </li>
+                      </ul>
+                    </details>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li><a>Item 3</a></li>
+          </ul>
         </div>
 
         <!-- Main Content -->
         <div
-          class="flex-grow p-6 transition-all duration-500"
+          class="flex-grow bg-gray-100 p-6 transition-all duration-500"
           [ngClass]="{
             'ml-64': leftSidenavState === 'expanded' && !isSmallScreen,
             'ml-16': leftSidenavState === 'icons' && !isSmallScreen,
@@ -151,7 +189,10 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
           [style.marginRight]="getRightSidenavMargin()"
         >
           <h1 class="text-2xl font-bold">Main Content</h1>
-          <p>sagar</p>
+          <p>
+            Content area. The right sidenav now overlaps the content without
+            pushing it under the left sidenav.
+          </p>
         </div>
 
         <!-- Right sidenav -->
@@ -197,16 +238,14 @@ export class AppComponent {
   userProfileImage: string =
     'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp';
   userProfileMenuItems: iFTUIUserProfileMenuItem[] = [{ label: 'Settings' }];
-  
+
   constructor() {
     this.updateSidenavState(window.innerWidth);
   }
-  
-  private adaptiveWindowResize: boolean = false;
+
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    if (this.adaptiveWindowResize)
-      this.updateSidenavState(event.target.innerWidth);
+    this.updateSidenavState(event.target.innerWidth);
   }
 
   toggleSidenav(side: 'left' | 'right') {
