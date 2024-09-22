@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeSelectorComponent } from './theme-selector/theme-selector.component';
 import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
@@ -8,7 +8,7 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
   imports: [CommonModule, ThemeSelectorComponent],
   selector: 'app-root',
   template: `
-    <div class="flex flex-col h-screen">
+    <div class="flex flex-col h-screen overflow-hidden">
       <!-- Navbar (fixed and always on top) -->
       <nav
         class="bg-blue-700 text-white p-4 flex justify-between items-center fixed w-full top-0 z-50 !navbar"
@@ -48,7 +48,8 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
               </svg>
             </ng-container>
           </button>
-          <a class="btn btn-ghost normal-case text-xl">My Application</a>
+          <a class="btn btn-ghost normal-case text-xl">{{orgLogo}}</a>
+          <a class="btn btn-ghost normal-case text-xl">{{applicationName}}</a>
         </div>
 
         <div class="navbar-end flex items-center space-x-2">
@@ -109,10 +110,10 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
         </div>
       </nav>
 
-      <div class="flex flex-grow pt-16 overflow-auto">
+      <div class="flex flex-grow pt-16 overflow-hidden">
         <!-- Left sidenav -->
         <div
-          class="bg-gray-800 text-white transition-all duration-500 ease-in-out fixed z-40 min-h-screen overflow-auto"
+          class="bg-gray-800 text-white transition-all duration-500 ease-in-out h-full overflow-y-auto flex-shrink-0"
           [ngClass]="{
             'w-64': leftSidenavState === 'expanded' && !isSmallScreen,
             'w-16': leftSidenavState === 'icons' && !isSmallScreen,
@@ -139,7 +140,8 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
             </li>
           </ul>
 
-          <ul class="menu rounded-box bg-base-300">
+          <!-- Nested sidenav content for scrolling -->
+          <ul class="menu rounded-box bg-base-100">
             <li><a>Item 1</a></li>
             <li>
               <details open>
@@ -180,12 +182,7 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
 
         <!-- Main Content -->
         <div
-          class="flex-grow bg-gray-100 p-6 transition-all duration-500"
-          [ngClass]="{
-            'ml-64': leftSidenavState === 'expanded' && !isSmallScreen,
-            'ml-16': leftSidenavState === 'icons' && !isSmallScreen,
-            'ml-0': leftSidenavState === 'closed' || isSmallScreen
-          }"
+          class="flex-grow p-6 transition-all duration-500 overflow-hidden"
           [style.marginRight]="getRightSidenavMargin()"
         >
           <h1 class="text-2xl font-bold">Main Content</h1>
@@ -197,7 +194,7 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
 
         <!-- Right sidenav -->
         <div
-          class="bg-gray-800 text-white transition-all duration-500 ease-in-out fixed z-40 min-h-screen right-0"
+          class="bg-gray-800 text-white transition-all duration-500 ease-in-out h-full overflow-y-auto flex-shrink-0"
           [ngClass]="{
             'w-64': rightSidenavState === 'expanded' && !isSmallScreen,
             'w-full h-full': rightSidenavState === 'expanded' && isSmallScreen,
@@ -228,6 +225,8 @@ import { iFTUIUserProfileMenuItem } from './app-frame/app-frame.component';
   `,
 })
 export class AppComponent {
+  @Input() applicationName: string = "Other application";
+  @Input() orgLogo: string = "Other application";
   onUserProfileMenuItemClick(_t36: iFTUIUserProfileMenuItem) {
     throw new Error('Method not implemented.');
   }
