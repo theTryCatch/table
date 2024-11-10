@@ -1,27 +1,31 @@
-# Table
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.4.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+<div
+  *ngIf="showModal"
+  class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div class="bg-white rounded-lg w-3/4 max-w-lg shadow-lg">
+    <div class="p-4 flex justify-between items-center border-b border-gray-300">
+      <h2 class="text-lg font-bold">API Results</h2>
+      <button
+        (click)="closeModal()"
+        class="text-gray-500 hover:text-gray-800 font-bold">
+        &times;
+      </button>
+    </div>
+    <div class="p-4">
+      <ng-container *ngIf="data">
+        <div *ngFor="let item of data" class="py-2">
+          <p>{{ item.title }}</p>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!data">
+        <p>No data available</p>
+      </ng-container>
+    </div>
+    <div class="p-4 border-t border-gray-300">
+      <button
+        (click)="closeModal()"
+        class="bg-blue-500 text-white font-bold py-2 px-4 rounded">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
